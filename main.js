@@ -144,12 +144,12 @@ map.on("click", "indexes-layer", (e) => {
         popupContent = `
             <div class="popup-content">
                 <h4>Итоговый индекс ЗОЖ</h4>
-                <b>${Number(props["Index ZOZh"]).toFixed(3)}</b>
+                <b>${Number(props["Index ZOZh"]).toFixed(1)}</b>
                 <hr>
-                <div>Коммерческий спорт: ${Number(props["norm_n"]).toFixed(3)}</div>
-                <div>Спортивные площадки: ${Number(props["norm_fitness"]).toFixed(3)}</div>
-                <div>Негативные объекты: ${Number(props["norm_bad"]).toFixed(3)}</div>
-                <div>Рекреационная инфраструктура: ${Number(props["norm_park_weighted_avail"]).toFixed(3)}</div>
+                <div>Коммерческий спорт: ${Number(props["norm_n"]).toFixed(1)}</div>
+                <div>Спортивные площадки: ${Number(props["norm_fitness"]).toFixed(1)}</div>
+                <div>Негативные объекты: ${Number(props["norm_bad"]).toFixed(1)}</div>
+                <div>Рекреационная инфраструктура: ${Number(props["norm_park_weighted_avail"]).toFixed(1)}</div>
             </div>
         `;
 
@@ -157,7 +157,7 @@ map.on("click", "indexes-layer", (e) => {
 
         popupContent = `
             <div class="popup-content">
-                <b>${Number(props[field]).toFixed(3)}</b>
+                <b>${Number(props[field]).toFixed(1)}</b>
             </div>
         `;
     }
@@ -166,4 +166,5 @@ map.on("click", "indexes-layer", (e) => {
         .setLngLat(e.lngLat)
         .setHTML(popupContent)
         .addTo(map);
+
 });
