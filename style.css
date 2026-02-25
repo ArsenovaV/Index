@@ -1,0 +1,114 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+body {
+    display: flex;
+}
+
+#sidebar {
+    width: 260px;
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    z-index: 1;
+}
+
+#map {
+    flex: 1;
+}
+
+#legend {
+    margin-top: auto;
+    padding-top: 20px;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+}
+
+.legend-scale div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.maplibregl-popup-content {
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: sans-serif;
+    font-size: 13px;
+}
+
+.popup-content h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+}
+
+.popup-content hr {
+    margin: 6px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+.russian-scale-control {
+    background: rgba(255, 255, 255, 0);
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0);
+}
+
+.russian-scale-line {
+    height: 1.5px;
+    background: black;
+    margin-bottom: 4px;
+}
+
+.russian-scale-labels {
+    display: flex;
+    justify-content: space-between;
+}
+
+.panel {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.panel-title {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.panel-content {
+    margin-top: 8px;
+    display: none;
+    font-size: 14px;
+}
+
+.panel.active .panel-content {
+    display: block;
+}
+
+.indicator {
+    padding: 6px 4px;
+    cursor: pointer;
+}
+
+.indicator:hover {
+    background: #f0f0f0;
+}
+
+.indicator.active {
+    font-weight: 600;
+}
