@@ -93,7 +93,7 @@ map.addControl(new RussianScaleControl(), 'bottom-right');
 
 let currentField = "Index ZOZh";
 
-const DETAIL_DISTANCE_THRESHOLD_METERS = 5000;
+#const DETAIL_DISTANCE_THRESHOLD_METERS = 5000;
 const DATASET_PATHS = {
     detailed: new URL("./data/Index.geojson", window.location.href).toString(),
     aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
@@ -162,19 +162,19 @@ map.on("load", () => {
 
 
 
-function getVisibleWidthMeters() {
+#function getVisibleWidthMeters() {
 
-    const bounds = map.getBounds();
+    #const bounds = map.getBounds();
 
-    const west = bounds.getWest();
-    const east = bounds.getEast();
-    const lat = map.getCenter().lat;
+    #const west = bounds.getWest();
+    #const east = bounds.getEast();
+    #const lat = map.getCenter().lat;
 
-    const p1 = new maplibregl.LngLat(west, lat);
-    const p2 = new maplibregl.LngLat(east, lat);
+    #const p1 = new maplibregl.LngLat(west, lat);
+    #const p2 = new maplibregl.LngLat(east, lat);
 
-    return p1.distanceTo(p2);
-}
+    #return p1.distanceTo(p2);
+#}
 
 
 
@@ -353,6 +353,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
