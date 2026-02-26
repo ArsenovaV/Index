@@ -294,19 +294,20 @@ map.addLayer({
     source: "indexes",
     paint: {
         "fill-color": "#ffffff",
-        "fill-opacity": 0.5
+        "fill-opacity": 0.5,
+        "fill-antialias": false
     }
 });
 
 // 3. Контур ячеек
-map.addLayer({
-    id: "indexes-outline",
-    type: "line",
-    source: "indexes",
-    paint: {
-        "line-color": "#ffffff",
-        "line-width": 0
-    }
+//map.addLayer({
+    //id: "indexes-outline",
+    //type: "line",
+    //source: "indexes",
+    //paint: {
+        //"line-color": "#ffffff",
+        //"line-width": 0
+    //}
 });
 
 // 4. Источник границ районов
@@ -404,6 +405,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
