@@ -338,8 +338,6 @@ map.addLayer({
 
     // Первый рендер слоя/легенды
     updateLayer(currentField);
-    
-);
 
 // ----------------- UI / переключение показателей -----------------
 document.querySelectorAll(".panel-title").forEach(title => {
@@ -405,6 +403,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
