@@ -179,27 +179,16 @@ function getVisibleWidthMeters() {
 
 
 function ensureDatasetByScale() {
-
     const zoom = map.getZoom();
+    const nextDataset = zoom >= 6 ? "detailed" : "aggregated";
 
-    const nextDataset =
-        zoom >= 6 ? "detailed" : "aggregated";
-
-    if (nextDataset === activeDataset) {
-        return;
-    }
+    if (nextDataset === activeDataset) return;
 
     activeDataset = nextDataset;
 
-    map.getSource("indexes").setData(
-        DATASET_PATHS[nextDataset]
-    );
-
-    map.once("idle", () => {
-        updateLayer(currentField);
-    });
+    map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
+    updateLayer(currentField);
 }
-
 
 // 3️⃣ Расчёт квартилей
 function calculateQuartiles(values) {
@@ -230,34 +219,25 @@ function getQuartileExpression(field, q1, q2, q3) {
 
 // 5️⃣ Обновление слоя
 function updateLayer(field) {
+    const source = map.getSource("indexes");
+    if (!source || !source._data) return;
 
-    const url = DATASET_PATHS[activeDataset];
+    const values = source._data.features
+        .map(f => Number(f.properties[field]))
+        .filter(v => !isNaN(v));
 
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
+    if (!values.length) return;
 
-            const values = data.features
-                .map(f => Number(f.properties[field]))
-                .filter(v => !isNaN(v));
+    const min = Math.min(...values);
+    const max = Math.max(...values);
 
-            if (!values.length) return;
+    const { q1, q2, q3 } = calculateQuartiles(values);
 
-            const min = Math.min(...values);
-            const max = Math.max(...values);
+    const expression = getQuartileExpression(field, q1, q2, q3);
 
-            const { q1, q2, q3 } = calculateQuartiles(values);
+    map.setPaintProperty("indexes-layer", "fill-color", expression);
 
-            const expression = getQuartileExpression(field, q1, q2, q3);
-
-            map.setPaintProperty(
-                "indexes-layer",
-                "fill-color",
-                expression
-            );
-
-            updateLegend(field, min, max, q1, q2, q3);
-        });
+    updateLegend(field, min, max, q1, q2, q3);
 }
 
 // 6️⃣ Легенда
@@ -353,6 +333,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
