@@ -93,12 +93,20 @@ map.addControl(new RussianScaleControl(), 'bottom-right');
 
 let currentField = "Index ZOZh";
 
+const DETAIL_DISTANCE_THRESHOLD_METERS = 5000;
+const DATASET_PATHS = {
+    detailed: new URL("./data/Index.geojson", window.location.href).toString(),
+    aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
+};
+
+let activeDataset = "detailed";
+
 // 2️⃣ После загрузки карты
 map.on("load", () => {
 
     map.addSource("indexes", {
         type: "geojson",
-        data: new URL("./data/Index.geojson", window.location.href).toString()
+        data: DATASET_PATHS.detailed
     });
 
     map.addLayer({
@@ -141,16 +149,43 @@ map.on("load", () => {
         }
     }, "indexes-layer"); // добавляем **перед** слоями с индексами
 
-    // Пересчёт при изменении зума или перемещении
+    // Переключаем источник данных в зависимости от масштаба
     map.on("moveend", () => {
-    updateLayer(currentField);
+        ensureDatasetByScale();
     });
 
     // Ждём полной загрузки данных
     map.once("idle", () => {
-        updateLayer("Index ZOZh");
+        ensureDatasetByScale();
     });
 });
+
+
+
+function getVisibleWidthMeters() {
+    const bounds = map.getBounds();
+    const centerLat = map.getCenter().lat;
+    return map.distance(
+        [bounds.getWest(), centerLat],
+        [bounds.getEast(), centerLat]
+    );
+}
+
+function ensureDatasetByScale() {
+    const useAggregated = getVisibleWidthMeters() > DETAIL_DISTANCE_THRESHOLD_METERS;
+    const nextDataset = useAggregated ? "aggregated" : "detailed";
+
+    if (nextDataset !== activeDataset) {
+        activeDataset = nextDataset;
+        map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
+    }
+
+    if (map.areTilesLoaded()) {
+        updateLayer(currentField);
+    } else {
+        map.once("idle", () => updateLayer(currentField));
+    }
+}
 
 
 // 3️⃣ Расчёт квартилей
