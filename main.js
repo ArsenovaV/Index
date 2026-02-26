@@ -274,72 +274,44 @@ function ensureDatasetByScale() {
 
 // ----------------- Сборка карты после загрузки -----------------
 map.on("load", async () => {
-    try {
-        await preloadDatasets();
-    } catch (err) {
-        console.error("Ошибка загрузки датасетов:", err);
-        return;
-    }
 
-    // 1. Источник тематических данных
-map.addSource("indexes", {
-    type: "geojson",
-    data: DATA_CACHE[activeDataset]
-});
+    await preloadDatasets();
 
-// 2. Заливка
-map.addLayer({
-    id: "indexes-layer",
-    type: "fill",
-    source: "indexes",
-    paint: {
-        "fill-color": "#ffffff",
-        "fill-opacity": 0.5,
-        "fill-antialias": false
-    }
-});
-
-// 3. Контур ячеек
-//map.addLayer({
-    //id: "indexes-outline",
-    //type: "line",
-    //source: "indexes",
-    //paint: {
-        //"line-color": "#ffffff",
-        //"line-width": 0
-    //}
-//});
-
-// 4. Источник границ районов
-map.addSource("msk-borders", {
-    type: "geojson",
-    data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
-});
-
-// 5. Границы
-map.addLayer({
-    id: "msk-borders-layer",
-    type: "line",
-    source: "msk-borders",
-    layout: {
-        "line-join": "round",
-        "line-cap": "round"
-    },
-    paint: {
-        "line-color": "#5b5b5b",
-        "line-width": 1
-    }
-});
-
-    // Обновляем по завершении движений
-    map.on("moveend", () => {
-        ensureDatasetByScale();
+    map.addSource("indexes", {
+        type: "geojson",
+        data: DATA_CACHE[activeDataset]
     });
 
-    // Первый рендер слоя/легенды
+    map.addLayer({
+        id: "indexes-layer",
+        type: "fill",
+        source: "indexes",
+        paint: {
+            "fill-color": "#ffffff",
+            "fill-opacity": 0.9,
+            "fill-antialias": false
+        }
+    });
+
+    map.addSource("msk-borders", {
+        type: "geojson",
+        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
+    });
+
+    map.addLayer({
+        id: "msk-borders-layer",
+        type: "line",
+        source: "msk-borders",
+        paint: {
+            "line-color": "#5b5b5b",
+            "line-width": 1
+        }
+    });
+
+    map.on("moveend", ensureDatasetByScale);
+
     updateLayer(currentField);
 });
-
 // ----------------- UI / переключение показателей -----------------
 document.querySelectorAll(".panel-title").forEach(title => {
     title.addEventListener("click", () => {
@@ -404,6 +376,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
