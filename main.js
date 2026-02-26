@@ -281,53 +281,54 @@ map.on("load", async () => {
         return;
     }
 
-    // Слой с административными границами
-    map.addSource("msk-borders", {
-        type: "geojson",
-        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
-    });
+    // 1. Источник тематических данных
+map.addSource("indexes", {
+    type: "geojson",
+    data: DATA_CACHE[activeDataset]
+});
 
-    map.addLayer({
-        id: "msk-borders-layer",
-        type: "line",
-        source: "msk-borders",
-        layout: {
-            "line-join": "round",
-            "line-cap": "round"
-        },
-        paint: {
-            "line-color": "#5b5b5b",
-            "line-width": 1.5
-        }
-    }, "indexes-layer");
+// 2. Заливка
+map.addLayer({
+    id: "indexes-layer",
+    type: "fill",
+    source: "indexes",
+    paint: {
+        "fill-color": "#ffffff",
+        "fill-opacity": 0.7
+    }
+});
 
-    // Добавляем источник с предзагруженными данными (detailed по умолчанию)
-    map.addSource("indexes", {
-        type: "geojson",
-        data: DATA_CACHE[activeDataset]
-    });
+// 3. Контур ячеек
+map.addLayer({
+    id: "indexes-outline",
+    type: "line",
+    source: "indexes",
+    paint: {
+        "line-color": "#ffffff",
+        "line-width": 0
+    }
+});
 
-    // Слой заполнения
-    map.addLayer({
-        id: "indexes-layer",
-        type: "fill",
-        source: "indexes",
-        paint: {
-            "fill-color": "#ffffff",
-            "fill-opacity": 0.6
-        }
-    });
+// 4. Источник границ районов
+map.addSource("msk-borders", {
+    type: "geojson",
+    data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
+});
 
-    // Контур
-    map.addLayer({
-        id: "indexes-outline",
-        type: "line",
-        source: "indexes",
-        paint: {
-            "line-color": "#ffffff",
-            "line-width": 0
-        }
-    });
+// 5. Границы
+map.addLayer({
+    id: "msk-borders-layer",
+    type: "line",
+    source: "msk-borders",
+    layout: {
+        "line-join": "round",
+        "line-cap": "round"
+    },
+    paint: {
+        "line-color": "#5b5b5b",
+        "line-width": 1.5
+    }
+});
 
     // Обновляем по завершении движений
     map.on("moveend", () => {
@@ -403,6 +404,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
