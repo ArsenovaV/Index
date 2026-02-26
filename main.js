@@ -287,26 +287,6 @@ map.on("load", async () => {
         data: DATA_CACHE[activeDataset]
     });
 
-    // Слой с административными границами
-    map.addSource("msk-borders", {
-        type: "geojson",
-        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
-    });
-
-    map.addLayer({
-        id: "msk-borders-layer",
-        type: "line",
-        source: "msk-borders",
-        layout: {
-            "line-join": "round",
-            "line-cap": "round"
-        },
-        paint: {
-            "line-color": "#5b5b5b",
-            "line-width": 1.5
-        }
-    }, "indexes-layer");
-
     // Слой заполнения
     map.addLayer({
         id: "indexes-layer",
@@ -336,6 +316,27 @@ map.on("load", async () => {
 
     // Первый рендер слоя/легенды
     updateLayer(currentField);
+
+    // Слой с административными границами
+    map.addSource("msk-borders", {
+        type: "geojson",
+        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
+    });
+
+    map.addLayer({
+        id: "msk-borders-layer",
+        type: "line",
+        source: "msk-borders",
+        layout: {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        paint: {
+            "line-color": "#5b5b5b",
+            "line-width": 1.5
+        }
+    }, "indexes-layer");
+    
 });
 
 // ----------------- UI / переключение показателей -----------------
@@ -402,6 +403,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
