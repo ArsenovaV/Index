@@ -281,6 +281,12 @@ map.on("load", async () => {
         return;
     }
 
+    // Добавляем источник с предзагруженными данными (detailed по умолчанию)
+    map.addSource("indexes", {
+        type: "geojson",
+        data: DATA_CACHE[activeDataset]
+    });
+
     // Слой с административными границами
     map.addSource("msk-borders", {
         type: "geojson",
@@ -300,12 +306,6 @@ map.on("load", async () => {
             "line-width": 1.5
         }
     }, "indexes-layer");
-
-    // Добавляем источник с предзагруженными данными (detailed по умолчанию)
-    map.addSource("indexes", {
-        type: "geojson",
-        data: DATA_CACHE[activeDataset]
-    });
 
     // Слой заполнения
     map.addLayer({
@@ -402,6 +402,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
