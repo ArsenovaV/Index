@@ -191,7 +191,7 @@ function ensureDatasetByScale() {
 
     map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
 
-    map.once("data", () => {
+    map.once("idle", () => {
         updateLayer(currentField);
     });
 }
@@ -227,27 +227,31 @@ function getQuartileExpression(field, q1, q2, q3) {
 // 5️⃣ Обновление слоя
 function updateLayer(field) {
 
-    const source = map.getSource("indexes");
-    if (!source || !source._data) return;
+    const url = DATASET_PATHS[activeDataset];
 
-    const features = source._data.features;
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
 
-    const values = features
-        .map(f => Number(f.properties[field]))
-        .filter(v => !isNaN(v));
+            const features = data.features;
 
-    if (values.length === 0) return;
+            const values = features
+                .map(f => Number(f.properties[field]))
+                .filter(v => !isNaN(v));
 
-    const min = Math.min(...values);
-    const max = Math.max(...values);
+            if (values.length === 0) return;
 
-    const { q1, q2, q3 } = calculateQuartiles(values);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
 
-    const expression = getQuartileExpression(field, q1, q2, q3);
+            const { q1, q2, q3 } = calculateQuartiles(values);
 
-    map.setPaintProperty("indexes-layer", "fill-color", expression);
+            const expression = getQuartileExpression(field, q1, q2, q3);
 
-    updateLegend(field, min, max, q1, q2, q3);
+            map.setPaintProperty("indexes-layer", "fill-color", expression);
+
+            updateLegend(field, min, max, q1, q2, q3);
+        });
 }
 
 
@@ -344,6 +348,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
