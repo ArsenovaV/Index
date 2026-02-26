@@ -308,7 +308,7 @@ map.addLayer({
         //"line-color": "#ffffff",
         //"line-width": 0
     //}
-});
+//});
 
 // 4. Источник границ районов
 map.addSource("msk-borders", {
@@ -338,6 +338,7 @@ map.addLayer({
 
     // Первый рендер слоя/легенды
     updateLayer(currentField);
+});
 
 // ----------------- UI / переключение показателей -----------------
 document.querySelectorAll(".panel-title").forEach(title => {
@@ -403,6 +404,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
