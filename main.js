@@ -233,13 +233,11 @@ function updateLayer(field) {
         .then(res => res.json())
         .then(data => {
 
-            const features = data.features;
-
-            const values = features
+            const values = data.features
                 .map(f => Number(f.properties[field]))
                 .filter(v => !isNaN(v));
 
-            if (values.length === 0) return;
+            if (!values.length) return;
 
             const min = Math.min(...values);
             const max = Math.max(...values);
@@ -248,12 +246,15 @@ function updateLayer(field) {
 
             const expression = getQuartileExpression(field, q1, q2, q3);
 
-            map.setPaintProperty("indexes-layer", "fill-color", expression);
+            map.setPaintProperty(
+                "indexes-layer",
+                "fill-color",
+                expression
+            );
 
             updateLegend(field, min, max, q1, q2, q3);
         });
 }
-
 
 // 6️⃣ Легенда
 function updateLegend(field, min, max, q1, q2, q3) {
@@ -348,6 +349,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
