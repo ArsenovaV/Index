@@ -43,8 +43,8 @@ def main():
 
     for feature, bbox in zip(features, bboxes):
         minx, miny, _, _ = bbox
-        col = round((minx - origin_x) / cell_w)
-        row = round((miny - origin_y) / cell_h)
+        col = int((minx - origin_x) / cell_w)
+        row = int((miny - origin_y) / cell_h)
 
         parent_col = col // 2
         parent_row = row // 2
