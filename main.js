@@ -175,6 +175,7 @@ function getVisibleWidthMeters() {
 
     return p1.distanceTo(p2);
 }
+
 function ensureDatasetByScale() {
 
     const useAggregated =
@@ -182,19 +183,17 @@ function ensureDatasetByScale() {
 
     const nextDataset = useAggregated ? "aggregated" : "detailed";
 
-    if (nextDataset !== activeDataset) {
-
-        activeDataset = nextDataset;
-
-        map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
-
-        map.once("sourcedata", () => {
-            updateLayer(currentField);
-        });
-
-    } else {
-        updateLayer(currentField);
+    if (nextDataset === activeDataset) {
+        return;
     }
+
+    activeDataset = nextDataset;
+
+    map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
+
+    map.once("data", () => {
+        updateLayer(currentField);
+    });
 }
 
 
@@ -345,6 +344,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
