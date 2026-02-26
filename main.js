@@ -98,7 +98,7 @@ map.on("load", () => {
 
     map.addSource("indexes", {
         type: "geojson",
-        data: "/data/Index.geojson"
+        data: "\data\Index.geojson"
     });
 
     map.addLayer({
@@ -124,7 +124,7 @@ map.on("load", () => {
     // 2️⃣ Слой с административными границами
     map.addSource("msk-borders", {
         type: "geojson",
-        data: "/data/MSK_borders.geojson"
+        data: "\data\MSK_borders.geojson"
     });
 
     map.addLayer({
@@ -297,4 +297,5 @@ map.on("click", "indexes-layer", (e) => {
         .setLngLat(e.lngLat)
         .setHTML(popupContent)
         .addTo(map);
+
 });
