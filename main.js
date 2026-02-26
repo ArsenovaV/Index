@@ -172,18 +172,24 @@ function getVisibleWidthMeters() {
 }
 
 function ensureDatasetByScale() {
-    const useAggregated = getVisibleWidthMeters() > DETAIL_DISTANCE_THRESHOLD_METERS;
+
+    const useAggregated =
+        getVisibleWidthMeters() > DETAIL_DISTANCE_THRESHOLD_METERS;
+
     const nextDataset = useAggregated ? "aggregated" : "detailed";
 
     if (nextDataset !== activeDataset) {
-        activeDataset = nextDataset;
-        map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
-    }
 
-    if (map.areTilesLoaded()) {
-        updateLayer(currentField);
+        activeDataset = nextDataset;
+
+        map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
+
+        map.once("sourcedata", () => {
+            updateLayer(currentField);
+        });
+
     } else {
-        map.once("idle", () => updateLayer(currentField));
+        updateLayer(currentField);
     }
 }
 
@@ -218,9 +224,10 @@ function getQuartileExpression(field, q1, q2, q3) {
 // 5️⃣ Обновление слоя
 function updateLayer(field) {
 
-    const features = map.queryRenderedFeatures({
-        layers: ["indexes-layer"]
-    });
+    const source = map.getSource("indexes");
+    if (!source || !source._data) return;
+
+    const features = source._data.features;
 
     const values = features
         .map(f => Number(f.properties[field]))
@@ -334,5 +341,6 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
