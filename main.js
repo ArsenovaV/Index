@@ -281,6 +281,26 @@ map.on("load", async () => {
         return;
     }
 
+    // Слой с административными границами
+    map.addSource("msk-borders", {
+        type: "geojson",
+        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
+    });
+
+    map.addLayer({
+        id: "msk-borders-layer",
+        type: "line",
+        source: "msk-borders",
+        layout: {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        paint: {
+            "line-color": "#5b5b5b",
+            "line-width": 1.5
+        }
+    }, "indexes-layer");
+
     // Добавляем источник с предзагруженными данными (detailed по умолчанию)
     map.addSource("indexes", {
         type: "geojson",
@@ -308,26 +328,6 @@ map.on("load", async () => {
             "line-width": 0
         }
     });
-
-    // Слой с административными границами (ваш код)
-    map.addSource("msk-borders", {
-        type: "geojson",
-        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
-    });
-
-    map.addLayer({
-        id: "msk-borders-layer",
-        type: "line",
-        source: "msk-borders",
-        layout: {
-            "line-join": "round",
-            "line-cap": "round"
-        },
-        paint: {
-            "line-color": "#5b5b5b",
-            "line-width": 1.5
-        }
-    }, "indexes-layer");
 
     // Обновляем по завершении движений
     map.on("moveend", () => {
@@ -402,6 +402,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
