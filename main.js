@@ -176,12 +176,14 @@ function getVisibleWidthMeters() {
     return p1.distanceTo(p2);
 }
 
+
+
 function ensureDatasetByScale() {
 
     const zoom = map.getZoom();
 
     const nextDataset =
-        zoom >= 12 ? "detailed" : "aggregated";
+        zoom >= 10 ? "detailed" : "aggregated";
 
     if (nextDataset === activeDataset) {
         return;
@@ -351,6 +353,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
