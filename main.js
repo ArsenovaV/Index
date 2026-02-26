@@ -3,11 +3,11 @@ const map = new maplibregl.Map({
     container: "map",
     style: "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
     center: [37.6173, 55.7558],
-    zoom: 10,
+    zoom: 7,
 });
 
 // Настраиваем порог зума
-const ZOOM_THRESHOLD = 6; 
+const ZOOM_THRESHOLD = 10; 
 
 // Пути к данным
 const DATASET_PATHS = {
@@ -402,4 +402,5 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
