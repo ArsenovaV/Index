@@ -21,7 +21,7 @@ const DATA_CACHE = {
     aggregated: null
 };
 
-let activeDataset = "detailed";
+let activeDataset = "aggregated";
 let currentField = "Index ZOZh"; // показание по умолчанию
 
 // Создаем свою масштабную линейку с подписями кириллицей
@@ -402,3 +402,4 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
