@@ -6,6 +6,24 @@ const map = new maplibregl.Map({
     zoom: 10,
 });
 
+// Настраиваем порог зума
+const ZOOM_THRESHOLD = 6; 
+
+// Пути к данным
+const DATASET_PATHS = {
+    detailed: new URL("./data/Index.geojson", window.location.href).toString(),
+    aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
+};
+
+// Кешированные загруженные GeoJSON объекты
+const DATA_CACHE = {
+    detailed: null,
+    aggregated: null
+};
+
+let activeDataset = "detailed";
+let currentField = "Index ZOZh"; // показание по умолчанию
+
 // Создаем свою масштабную линейку с подписями кириллицей
 class RussianScaleControl {
     onAdd(map) {
@@ -70,102 +88,42 @@ class RussianScaleControl {
     }
 
     _getNiceNumber(maxMeters) {
-    // базовая прогрессия 1–2–5
-    const baseSteps = [1, 2, 5];
+        // базовая прогрессия 1–2–5
+        const baseSteps = [1, 2, 5];
 
-    const exponent = Math.floor(Math.log10(maxMeters));
-    const magnitude = Math.pow(10, exponent);
+        const exponent = Math.floor(Math.log10(maxMeters));
+        const magnitude = Math.pow(10, exponent);
 
-    let niceValue = magnitude;
+        let niceValue = magnitude;
 
-    for (let i = 0; i < baseSteps.length; i++) {
-        const candidate = baseSteps[i] * magnitude;
-        if (candidate <= maxMeters) {
-            niceValue = candidate;
+        for (let i = 0; i < baseSteps.length; i++) {
+            const candidate = baseSteps[i] * magnitude;
+            if (candidate <= maxMeters) {
+                niceValue = candidate;
+            }
         }
-    }
 
-    return niceValue;
-}
+        return niceValue;
+    }
 }
 
 map.addControl(new RussianScaleControl(), 'bottom-right');
 
-let currentField = "Index ZOZh";
+// Прелоадим оба geojson файла и положим в DATA_CACHE
+async function preloadDatasets() {
+    const paths = DATASET_PATHS;
+    const p1 = fetch(paths.detailed).then(r => r.ok ? r.json() : Promise.reject(`Failed: ${paths.detailed}`));
+    const p2 = fetch(paths.aggregated).then(r => r.ok ? r.json() : Promise.reject(`Failed: ${paths.aggregated}`));
 
-const DETAIL_DISTANCE_THRESHOLD_METERS = 5000;
-const DATASET_PATHS = {
-    detailed: new URL("./data/Index.geojson", window.location.href).toString(),
-    aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
-};
+    const [detailed, aggregated] = await Promise.all([p1, p2]);
+    DATA_CACHE.detailed = detailed;
+    DATA_CACHE.aggregated = aggregated;
+}
 
-let activeDataset = "detailed";
-
-// 2️⃣ После загрузки карты
-map.on("load", () => {
-
-    map.addSource("indexes", {
-        type: "geojson",
-        data: DATASET_PATHS.detailed
-    });
-
-    map.addLayer({
-        id: "indexes-layer",
-        type: "fill",
-        source: "indexes",
-        paint: {
-            "fill-color": "#ffffff",
-            "fill-opacity": 0.7
-        }
-    });
-
-    map.addLayer({
-        id: "indexes-outline",
-        type: "line",
-        source: "indexes",
-        paint: {
-            "line-color": "#ffffff",
-            "line-width": 0
-        }
-    });
-
-    // 2️⃣ Слой с административными границами
-    map.addSource("msk-borders", {
-        type: "geojson",
-        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
-    });
-
-    map.addLayer({
-        id: "msk-borders-layer",
-        type: "line",
-        source: "msk-borders",
-        layout: {
-            "line-join": "round",
-            "line-cap": "round"
-        },
-        paint: {
-            "line-color": "#5b5b5b",
-            "line-width": 1.5
-        }
-    }, "indexes-layer"); // добавляем **перед** слоями с индексами
-
-    // Переключаем источник данных в зависимости от масштаба
-    map.on("moveend", () => {
-        ensureDatasetByScale();
-    });
-
-    // Ждём полной загрузки данных
-    map.once("idle", () => {
-        ensureDatasetByScale();
-    });
-});
-
-
-
+// Получить расстояние в метрах видимой ширины (не используется в логике смены сейчас,
+// но оставил вашу функцию, если потребуется)
 function getVisibleWidthMeters() {
-
     const bounds = map.getBounds();
-
     const west = bounds.getWest();
     const east = bounds.getEast();
     const lat = map.getCenter().lat;
@@ -176,23 +134,34 @@ function getVisibleWidthMeters() {
     return p1.distanceTo(p2);
 }
 
+// Найти реальное имя свойства в data.features[...].properties,
+// если выбранное поле не совпадает (учитывает пробелы/подчёркивания/регистр)
+function resolvePropertyKey(fieldName, data) {
+    if (!data || !data.features || data.features.length === 0) return null;
 
+    const sampleProps = data.features[0].properties;
+    if (fieldName in sampleProps) return fieldName;
 
-function ensureDatasetByScale() {
-    const zoom = map.getZoom();
-    const nextDataset = zoom >= 6 ? "detailed" : "aggregated";
+    // нормализация
+    const normalize = s => String(s).toLowerCase().replace(/\s+/g, '').replace(/_+/g, '');
+    const target = normalize(fieldName);
 
-    if (nextDataset === activeDataset) return;
+    for (const key of Object.keys(sampleProps)) {
+        if (normalize(key) === target) return key;
+    }
 
-    activeDataset = nextDataset;
+    // если не нашлось точного соответствия — попробуем найти любое числовое свойство
+    for (const key of Object.keys(sampleProps)) {
+        const val = sampleProps[key];
+        if (typeof val === 'number' && !isNaN(val)) return key;
+        if (!isNaN(Number(val))) return key;
+    }
 
-    map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
-    updateLayer(currentField);
+    return null;
 }
 
-// 3️⃣ Расчёт квартилей
+// Вычисление квартилей (оставил вашу логику)
 function calculateQuartiles(values) {
-
     values.sort((a, b) => a - b);
 
     const q1 = values[Math.floor(values.length * 0.25)];
@@ -202,13 +171,10 @@ function calculateQuartiles(values) {
     return { q1, q2, q3 };
 }
 
-
-// 4️⃣ Цветовое выражение (4 класса)
-function getQuartileExpression(field, q1, q2, q3) {
-
+function getQuartileExpression(propertyKey, q1, q2, q3) {
     return [
         "step",
-        ["get", field],
+        ["get", propertyKey],
         "#FCFAFF",
         q1, "#D8C7F1",
         q2, "#8471A9",
@@ -216,33 +182,8 @@ function getQuartileExpression(field, q1, q2, q3) {
     ];
 }
 
-
-// 5️⃣ Обновление слоя
-function updateLayer(field) {
-    const source = map.getSource("indexes");
-    if (!source || !source._data) return;
-
-    const values = source._data.features
-        .map(f => Number(f.properties[field]))
-        .filter(v => !isNaN(v));
-
-    if (!values.length) return;
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-
-    const { q1, q2, q3 } = calculateQuartiles(values);
-
-    const expression = getQuartileExpression(field, q1, q2, q3);
-
-    map.setPaintProperty("indexes-layer", "fill-color", expression);
-
-    updateLegend(field, min, max, q1, q2, q3);
-}
-
-// 6️⃣ Легенда
+// Обновление легенды — ваша логика почти без изменений
 function updateLegend(field, min, max, q1, q2, q3) {
-
     const titles = {
         "Index ZOZh": "Итоговый индекс ЗОЖ",
         "norm_n": "Коммерческий спорт",
@@ -251,7 +192,7 @@ function updateLegend(field, min, max, q1, q2, q3) {
         "norm_park_weighted_avail": "Рекреационная инфраструктура"
     };
 
-    document.getElementById("legend-title").innerText = titles[field];
+    document.getElementById("legend-title").innerText = titles[field] || field;
 
     const colors = ["#FCFAFF", "#D8C7F1", "#8471A9", "#301E67"];
 
@@ -269,9 +210,135 @@ function updateLegend(field, min, max, q1, q2, q3) {
         `Min: ${min.toFixed(1)} | Max: ${max.toFixed(1)}`;
 }
 
+// Обновление слоя: теперь мы берём данные из DATA_CACHE[activeDataset]
+// и используем resolvePropertyKey чтобы найти реальное имя свойства
+function updateLayer(field) {
+    const data = DATA_CACHE[activeDataset];
+    if (!data) return;
 
-// 7️⃣ Смена показателя
-// раскрытие панелей
+    // Найдём реальное имя свойства в этом датасете
+    const propKey = resolvePropertyKey(field, data);
+    if (!propKey) {
+        console.warn("Поле не найдено в активном наборе данных:", field);
+        // сбросим заливку в нейтральный цвет
+        map.setPaintProperty("indexes-layer", "fill-color", "#ffffff");
+        return;
+    }
+
+    const values = data.features
+        .map(f => Number(f.properties[propKey]))
+        .filter(v => !isNaN(v));
+
+    if (!values.length) {
+        console.warn("Нет числовых значений для поля", propKey);
+        map.setPaintProperty("indexes-layer", "fill-color", "#ffffff");
+        return;
+    }
+
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const { q1, q2, q3 } = calculateQuartiles(values);
+
+    const expression = getQuartileExpression(propKey, q1, q2, q3);
+
+    map.setPaintProperty("indexes-layer", "fill-color", expression);
+
+    updateLegend(field, min, max, q1, q2, q3);
+
+    // Сохраняем в объекте свойства соответствие для popup (используем dataset + field)
+    // Чтобы popup также знал реальное имя свойства
+    map.__propertyKeyForPopup = map.__propertyKeyForPopup || {};
+    map.__propertyKeyForPopup[activeDataset + "::" + field] = propKey;
+}
+
+// Переключение набора исходя из уровня зума (только зум)
+function ensureDatasetByScale() {
+    const zoom = map.getZoom();
+    const nextDataset = zoom >= ZOOM_THRESHOLD ? "detailed" : "aggregated";
+
+    if (nextDataset === activeDataset) return;
+
+    activeDataset = nextDataset;
+
+    // Передаём в источник уже загруженный объект GeoJSON
+    const source = map.getSource("indexes");
+    if (source) {
+        source.setData(DATA_CACHE[nextDataset]);
+    } else {
+        console.warn("Источник indexes ещё не создан");
+    }
+
+    // Обновляем слой под текущий выбранный показатель
+    updateLayer(currentField);
+}
+
+// ----------------- Сборка карты после загрузки -----------------
+map.on("load", async () => {
+    try {
+        await preloadDatasets();
+    } catch (err) {
+        console.error("Ошибка загрузки датасетов:", err);
+        return;
+    }
+
+    // Добавляем источник с предзагруженными данными (detailed по умолчанию)
+    map.addSource("indexes", {
+        type: "geojson",
+        data: DATA_CACHE[activeDataset]
+    });
+
+    // Слой заполнения
+    map.addLayer({
+        id: "indexes-layer",
+        type: "fill",
+        source: "indexes",
+        paint: {
+            "fill-color": "#ffffff",
+            "fill-opacity": 0.7
+        }
+    });
+
+    // Контур
+    map.addLayer({
+        id: "indexes-outline",
+        type: "line",
+        source: "indexes",
+        paint: {
+            "line-color": "#ffffff",
+            "line-width": 0
+        }
+    });
+
+    // Слой с административными границами (ваш код)
+    map.addSource("msk-borders", {
+        type: "geojson",
+        data: new URL("./data/MSK_borders.geojson", window.location.href).toString()
+    });
+
+    map.addLayer({
+        id: "msk-borders-layer",
+        type: "line",
+        source: "msk-borders",
+        layout: {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        paint: {
+            "line-color": "#5b5b5b",
+            "line-width": 1.5
+        }
+    }, "indexes-layer");
+
+    // Обновляем по завершении движений
+    map.on("moveend", () => {
+        ensureDatasetByScale();
+    });
+
+    // Первый рендер слоя/легенды
+    updateLayer(currentField);
+});
+
+// ----------------- UI / переключение показателей -----------------
 document.querySelectorAll(".panel-title").forEach(title => {
     title.addEventListener("click", () => {
         const panel = title.parentElement;
@@ -279,7 +346,6 @@ document.querySelectorAll(".panel-title").forEach(title => {
     });
 });
 
-// переключение показателей
 document.querySelectorAll(".indicator").forEach(item => {
     item.addEventListener("click", () => {
 
@@ -290,39 +356,43 @@ document.querySelectorAll(".indicator").forEach(item => {
 
         const field = item.dataset.field;
         currentField = field;
+
+        // Сначала убедимся, что активный датасет соответствует уровню зума,
+        // затем обновим слой (это гарантирует, что для любого поля смена набора произойдёт корректно)
+        ensureDatasetByScale();
         updateLayer(field);
     });
 });
 
-
-
-// 8️⃣ Popup
+// ----------------- Popup (используем сохранённый объект соответствия ключей) -----------------
 map.on("click", "indexes-layer", (e) => {
-
     const props = e.features[0].properties;
     const field = currentField;
+
+    // попытка найти реальное имя свойства для popup в кеше
+    const propKeyCache = (map.__propertyKeyForPopup || {})[activeDataset + "::" + field];
+    const propKey = propKeyCache || resolvePropertyKey(field, DATA_CACHE[activeDataset]);
 
     let popupContent = "";
 
     if (field === "Index ZOZh") {
-
+        const idx = Number(props[propKey || "Index ZOZh"]);
         popupContent = `
             <div class="popup-content">
                 <h4>Итоговый индекс ЗОЖ</h4>
-                <b>${Number(props["Index ZOZh"]).toFixed(1)}</b>
+                <b>${isNaN(idx) ? "-" : idx.toFixed(1)}</b>
                 <hr>
-                <div>Коммерческий спорт: ${Number(props["norm_n"]).toFixed(1)}</div>
-                <div>Спортивные площадки: ${Number(props["norm_fitness"]).toFixed(1)}</div>
-                <div>Негативные объекты: ${Number(props["norm_bad"]).toFixed(1)}</div>
-                <div>Рекреационная инфраструктура: ${Number(props["norm_park_weighted_avail"]).toFixed(1)}</div>
+                <div>Коммерческий спорт: ${Number(props["norm_n"] || props["norm_n"] || "-")}</div>
+                <div>Спортивные площадки: ${Number(props["norm_fitness"] || props["norm_fitness"] || "-")}</div>
+                <div>Негативные объекты: ${Number(props["norm_bad"] || props["norm_bad"] || "-")}</div>
+                <div>Рекреационная инфраструктура: ${Number(props["norm_park_weighted_avail"] || props["norm_park_weighted_avail"] || "-")}</div>
             </div>
         `;
-
     } else {
-
+        const val = Number(props[propKey]);
         popupContent = `
             <div class="popup-content">
-                <b>${Number(props[field]).toFixed(1)}</b>
+                <b>${isNaN(val) ? "-" : val.toFixed(1)}</b>
             </div>
         `;
     }
@@ -331,20 +401,4 @@ map.on("click", "indexes-layer", (e) => {
         .setLngLat(e.lngLat)
         .setHTML(popupContent)
         .addTo(map);
-
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
