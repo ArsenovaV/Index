@@ -93,7 +93,7 @@ map.addControl(new RussianScaleControl(), 'bottom-right');
 
 let currentField = "Index ZOZh";
 
-const DETAIL_DISTANCE_THRESHOLD_METERS = 10000;
+const DETAIL_DISTANCE_THRESHOLD_METERS = 5000;
 const DATASET_PATHS = {
     detailed: new URL("./data/Index.geojson", window.location.href).toString(),
     aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
@@ -353,6 +353,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
