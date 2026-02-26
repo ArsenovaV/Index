@@ -178,10 +178,10 @@ function getVisibleWidthMeters() {
 
 function ensureDatasetByScale() {
 
-    const useAggregated =
-        getVisibleWidthMeters() > DETAIL_DISTANCE_THRESHOLD_METERS;
+    const zoom = map.getZoom();
 
-    const nextDataset = useAggregated ? "aggregated" : "detailed";
+    const nextDataset =
+        zoom >= 12 ? "detailed" : "aggregated";
 
     if (nextDataset === activeDataset) {
         return;
@@ -189,7 +189,9 @@ function ensureDatasetByScale() {
 
     activeDataset = nextDataset;
 
-    map.getSource("indexes").setData(DATASET_PATHS[nextDataset]);
+    map.getSource("indexes").setData(
+        DATASET_PATHS[nextDataset]
+    );
 
     map.once("idle", () => {
         updateLayer(currentField);
@@ -349,6 +351,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
