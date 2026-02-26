@@ -183,7 +183,7 @@ function ensureDatasetByScale() {
     const zoom = map.getZoom();
 
     const nextDataset =
-        zoom >= 10 ? "detailed" : "aggregated";
+        zoom >= 8 ? "detailed" : "aggregated";
 
     if (nextDataset === activeDataset) {
         return;
@@ -353,6 +353,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
