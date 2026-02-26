@@ -294,7 +294,7 @@ map.addLayer({
     source: "indexes",
     paint: {
         "fill-color": "#ffffff",
-        "fill-opacity": 0.7
+        "fill-opacity": 0.5
     }
 });
 
@@ -326,7 +326,7 @@ map.addLayer({
     },
     paint: {
         "line-color": "#5b5b5b",
-        "line-width": 1.5
+        "line-width": 1
     }
 });
 
@@ -404,6 +404,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
