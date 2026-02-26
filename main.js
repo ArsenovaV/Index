@@ -163,14 +163,18 @@ map.on("load", () => {
 
 
 function getVisibleWidthMeters() {
-    const bounds = map.getBounds();
-    const centerLat = map.getCenter().lat;
-    return map.distance(
-        [bounds.getWest(), centerLat],
-        [bounds.getEast(), centerLat]
-    );
-}
 
+    const bounds = map.getBounds();
+
+    const west = bounds.getWest();
+    const east = bounds.getEast();
+    const lat = map.getCenter().lat;
+
+    const p1 = new maplibregl.LngLat(west, lat);
+    const p2 = new maplibregl.LngLat(east, lat);
+
+    return p1.distanceTo(p2);
+}
 function ensureDatasetByScale() {
 
     const useAggregated =
@@ -341,6 +345,7 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 
 });
+
 
 
 
