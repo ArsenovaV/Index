@@ -26,7 +26,8 @@ const DATA_CACHE = {
 };
 
 let activeDataset = "aggregated";
-let currentField = "Index ZOZh"; // показание по умолчанию
+let currentField = "Index ZOZh";
+let activeMode = "cells";
 
 // Создаем свою масштабную линейку с подписями кириллицей
 class RussianScaleControl {
@@ -224,53 +225,12 @@ function updateLegend(field, min, max, q1, q2, q3) {
 // и используем resolvePropertyKey чтобы найти реальное имя свойства
 function updateLayer(field) {
 
-    const data =
-        activeMode === "districts"
-            ? DATA_CACHE.districts
-            : getActiveData();
-
-    if (!data) return;
-
-    const values = data.features
-        .map(f => f.properties[field])
-        .filter(v => v !== null && v !== undefined && !isNaN(v));
-
-    if (!values.length) return;
-
-    const breaks = getQuartiles(values);
-
-    const expression = [
-        "step",
-        ["get", field],
-        "#f1eef6",
-        breaks[0], "#d7b5d8",
-        breaks[1], "#df65b0",
-        breaks[2], "#ce1256"
-    ];
-
-    const targetLayer =
-        activeMode === "districts"
-            ? "districts-layer"
-            : "indexes-layer";
-
-    map.setPaintProperty(targetLayer, "fill-color", expression);
-    
-    function getActiveData() {
-    if (activeMode === "clusters") {
-        return DATA_CACHE.clusters;
-    }
-    return DATA_CACHE[activeDataset];
-    }
-    
     const data = getActiveData();
     if (!data) return;
 
-    // Найдём реальное имя свойства в этом датасете
     const propKey = resolvePropertyKey(field, data);
     if (!propKey) {
-        console.warn("Поле не найдено в активном наборе данных:", field);
-        // сбросим заливку в нейтральный цвет
-        map.setPaintProperty("indexes-layer", "fill-color", "#ffffff");
+        console.warn("Поле не найдено:", field);
         return;
     }
 
@@ -278,11 +238,7 @@ function updateLayer(field) {
         .map(f => Number(f.properties[propKey]))
         .filter(v => !isNaN(v));
 
-    if (!values.length) {
-        console.warn("Нет числовых значений для поля", propKey);
-        map.setPaintProperty("indexes-layer", "fill-color", "#ffffff");
-        return;
-    }
+    if (!values.length) return;
 
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -290,14 +246,18 @@ function updateLayer(field) {
 
     const expression = getQuartileExpression(propKey, q1, q2, q3);
 
-    map.setPaintProperty("indexes-layer", "fill-color", expression);
+    const targetLayer =
+        activeMode === "districts"
+            ? "districts-layer"
+            : "indexes-layer";
+
+    map.setPaintProperty(targetLayer, "fill-color", expression);
 
     updateLegend(field, min, max, q1, q2, q3);
 
-    // Сохраняем в объекте свойства соответствие для popup (используем dataset + field)
-    // Чтобы popup также знал реальное имя свойства
+    // кешируем ключ для popup
     map.__propertyKeyForPopup = map.__propertyKeyForPopup || {};
-    map.__propertyKeyForPopup[activeDataset + "::" + field] = propKey;
+    map.__propertyKeyForPopup[activeMode + "::" + field] = propKey;
 }
 
 // Переключение набора исходя из уровня зума (только зум)
@@ -318,6 +278,16 @@ function ensureDatasetByScale() {
     }
 
     updateLayer(currentField);
+}
+
+function getActiveData() {
+    if (activeMode === "clusters") {
+        return DATA_CACHE.clusters;
+    }
+    if (activeMode === "districts") {
+        return DATA_CACHE.districts;
+    }
+    return DATA_CACHE[activeDataset];
 }
 
 function switchMode(mode) {
@@ -407,7 +377,11 @@ map.on("load", async () => {
     map.on("moveend", ensureDatasetByScale);
 
     updateLayer(currentField);
+    attachPopup("indexes-layer");
+    attachPopup("districts-layer");
 });
+
+
 // ----------------- UI / переключение показателей -----------------
 document.querySelectorAll(".panel-title").forEach(title => {
     title.addEventListener("click", () => {
@@ -434,47 +408,34 @@ document.querySelectorAll(".indicator").forEach(item => {
     });
 });
 
-let activeMode = "cells"; // "cells" | "clusters"
-
 
 // ----------------- Popup (используем сохранённый объект соответствия ключей) -----------------
-map.on("click", "indexes-layer", (e) => {
-    const props = e.features[0].properties;
-    const field = currentField;
+function attachPopup(layerId) {
+    map.on("click", layerId, (e) => {
 
-    // попытка найти реальное имя свойства для popup в кеше
-    const propKeyCache = (map.__propertyKeyForPopup || {})[activeDataset + "::" + field];
-    const propKey = propKeyCache || resolvePropertyKey(field, DATA_CACHE[activeDataset]);
+        const props = e.features[0].properties;
+        const field = currentField;
 
-    let popupContent = "";
+        const propKeyCache =
+            (map.__propertyKeyForPopup || {})[activeMode + "::" + field];
 
-    if (field === "Index ZOZh") {
-        const idx = Number(props[propKey || "Index ZOZh"]);
-        popupContent = `
-            <div class="popup-content">
-                <h4>Итоговый индекс ЗОЖ</h4>
-                <b>${isNaN(idx) ? "-" : idx.toFixed(1)}</b>
-                <hr>
-                <div>Коммерческий спорт: ${Number(props["norm_n"] || props["norm_n"] || "-")}</div>
-                <div>Спортивные площадки: ${Number(props["norm_fitness"] || props["norm_fitness"] || "-")}</div>
-                <div>Негативные объекты: ${Number(props["norm_bad"] || props["norm_bad"] || "-")}</div>
-                <div>Рекреационная инфраструктура: ${Number(props["norm_park_weighted_avail"] || props["norm_park_weighted_avail"] || "-")}</div>
-            </div>
-        `;
-    } else {
+        const propKey =
+            propKeyCache || resolvePropertyKey(field, getActiveData());
+
         const val = Number(props[propKey]);
-        popupContent = `
+
+        const popupContent = `
             <div class="popup-content">
                 <b>${isNaN(val) ? "-" : val.toFixed(1)}</b>
             </div>
         `;
-    }
 
-    new maplibregl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(popupContent)
-        .addTo(map);
-});
+        new maplibregl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(popupContent)
+            .addTo(map);
+    });
+}
 
 const container = document.querySelector(".mode-container");
 const options = document.querySelectorAll(".mode-option");
@@ -501,4 +462,5 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
