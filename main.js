@@ -479,23 +479,26 @@ map.on("click", "indexes-layer", (e) => {
 const container = document.querySelector(".mode-container");
 const options = document.querySelectorAll(".mode-option");
 
-options.forEach(option => {
+options.forEach((option, index) => {
+
     option.addEventListener("click", () => {
 
         const selectedMode = option.dataset.mode;
 
-        // визуальное состояние
         options.forEach(o => o.classList.remove("active"));
         option.classList.add("active");
 
+        container.classList.remove("clusters", "districts");
+
         if (selectedMode === "clusters") {
             container.classList.add("clusters");
-        } else {
-            container.classList.remove("clusters");
+        }
+
+        if (selectedMode === "districts") {
+            container.classList.add("districts");
         }
 
         switchMode(selectedMode);
     });
 });
-
 
