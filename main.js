@@ -410,19 +410,19 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 });
 
+const toggle = document.getElementById("modeToggle");
+const labels = document.querySelectorAll(".mode-label");
 
+toggle.addEventListener("change", () => {
 
+    if (toggle.checked) {
+        switchMode("clusters");
+        labels[0].classList.remove("active");
+        labels[1].classList.add("active");
+    } else {
+        switchMode("cells");
+        labels[1].classList.remove("active");
+        labels[0].classList.add("active");
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+});
