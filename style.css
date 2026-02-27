@@ -136,11 +136,19 @@ body {
     position: absolute;
     top: 4px;
     left: 4px;
-    width: calc(50% - 4px);
+    width: calc(33.333% - 4px);
     height: 32px;
     background-color: #8471A9;
     border-radius: 9px;
     transition: transform 0.25s ease;
+}
+
+.mode-container.clusters .mode-indicator {
+    transform: translateX(100%);
+}
+
+.mode-container.districts .mode-indicator {
+    transform: translateX(200%);
 }
 
 /* Когда выбран режим кластеров */
@@ -165,3 +173,4 @@ body {
 .mode-option.active {
     color: white;
 }
+
