@@ -12,13 +12,15 @@ const ZOOM_THRESHOLD = 10;
 // Пути к данным
 const DATASET_PATHS = {
     detailed: new URL("./data/Index.geojson", window.location.href).toString(),
-    aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString()
+    aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString(),
+    clusters: new URL("./data/Cluster_MSK.geojson", window.location.href).toString()
 };
 
 // Кешированные загруженные GeoJSON объекты
 const DATA_CACHE = {
     detailed: null,
-    aggregated: null
+    aggregated: null,
+    clusters: null
 };
 
 let activeDataset = "aggregated";
@@ -112,14 +114,17 @@ map.addControl(new RussianScaleControl(), 'bottom-right');
 // Прелоадим оба geojson файла и положим в DATA_CACHE
 async function preloadDatasets() {
     const paths = DATASET_PATHS;
-    const p1 = fetch(paths.detailed).then(r => r.ok ? r.json() : Promise.reject(`Failed: ${paths.detailed}`));
-    const p2 = fetch(paths.aggregated).then(r => r.ok ? r.json() : Promise.reject(`Failed: ${paths.aggregated}`));
 
-    const [detailed, aggregated] = await Promise.all([p1, p2]);
+    const p1 = fetch(paths.detailed).then(r => r.json());
+    const p2 = fetch(paths.aggregated).then(r => r.json());
+    const p3 = fetch(paths.clusters).then(r => r.json());
+
+    const [detailed, aggregated, clusters] = await Promise.all([p1, p2, p3]);
+
     DATA_CACHE.detailed = detailed;
     DATA_CACHE.aggregated = aggregated;
+    DATA_CACHE.clusters = clusters;
 }
-
 // Получить расстояние в метрах видимой ширины (не используется в логике смены сейчас,
 // но оставил вашу функцию, если потребуется)
 function getVisibleWidthMeters() {
@@ -213,7 +218,15 @@ function updateLegend(field, min, max, q1, q2, q3) {
 // Обновление слоя: теперь мы берём данные из DATA_CACHE[activeDataset]
 // и используем resolvePropertyKey чтобы найти реальное имя свойства
 function updateLayer(field) {
-    const data = DATA_CACHE[activeDataset];
+
+    function getActiveData() {
+    if (activeMode === "clusters") {
+        return DATA_CACHE.clusters;
+    }
+    return DATA_CACHE[activeDataset];
+    }
+    
+    const data = getActiveData();
     if (!data) return;
 
     // Найдём реальное имя свойства в этом датасете
@@ -253,6 +266,9 @@ function updateLayer(field) {
 
 // Переключение набора исходя из уровня зума (только зум)
 function ensureDatasetByScale() {
+
+    if (activeMode === "clusters") return;
+
     const zoom = map.getZoom();
     const nextDataset = zoom >= ZOOM_THRESHOLD ? "detailed" : "aggregated";
 
@@ -260,15 +276,29 @@ function ensureDatasetByScale() {
 
     activeDataset = nextDataset;
 
-    // Передаём в источник уже загруженный объект GeoJSON
     const source = map.getSource("indexes");
     if (source) {
         source.setData(DATA_CACHE[nextDataset]);
-    } else {
-        console.warn("Источник indexes ещё не создан");
     }
 
-    // Обновляем слой под текущий выбранный показатель
+    updateLayer(currentField);
+}
+
+function switchMode(mode) {
+
+    if (mode === activeMode) return;
+
+    activeMode = mode;
+
+    const source = map.getSource("indexes");
+
+    if (mode === "clusters") {
+        source.setData(DATA_CACHE.clusters);
+    } else {
+        ensureDatasetByScale();
+        source.setData(DATA_CACHE[activeDataset]);
+    }
+
     updateLayer(currentField);
 }
 
@@ -338,6 +368,9 @@ document.querySelectorAll(".indicator").forEach(item => {
     });
 });
 
+let activeMode = "cells"; // "cells" | "clusters"
+
+
 // ----------------- Popup (используем сохранённый объект соответствия ключей) -----------------
 map.on("click", "indexes-layer", (e) => {
     const props = e.features[0].properties;
@@ -376,6 +409,7 @@ map.on("click", "indexes-layer", (e) => {
         .setHTML(popupContent)
         .addTo(map);
 });
+
 
 
 
