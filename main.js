@@ -13,14 +13,16 @@ const ZOOM_THRESHOLD = 10;
 const DATASET_PATHS = {
     detailed: new URL("./data/Index.geojson", window.location.href).toString(),
     aggregated: new URL("./data/Index_5km.geojson", window.location.href).toString(),
-    clusters: new URL("./data/Cluster_MSK.geojson", window.location.href).toString()
+    clusters: new URL("./data/Cluster_MSK.geojson", window.location.href).toString(),
+    districts: new URL("./data/MSK_borders.geojson", window.location.href).toString()
 };
 
 // Кешированные загруженные GeoJSON объекты
 const DATA_CACHE = {
     detailed: null,
     aggregated: null,
-    clusters: null
+    clusters: null,
+    districts: null
 };
 
 let activeDataset = "aggregated";
@@ -113,18 +115,21 @@ map.addControl(new RussianScaleControl(), 'bottom-right');
 
 // Прелоадим оба geojson файла и положим в DATA_CACHE
 async function preloadDatasets() {
-    const paths = DATASET_PATHS;
 
-    const p1 = fetch(paths.detailed).then(r => r.json());
-    const p2 = fetch(paths.aggregated).then(r => r.json());
-    const p3 = fetch(paths.clusters).then(r => r.json());
+    const p1 = fetch(DATASET_PATHS.detailed).then(r => r.json());
+    const p2 = fetch(DATASET_PATHS.aggregated).then(r => r.json());
+    const p3 = fetch(DATASET_PATHS.clusters).then(r => r.json());
+    const p4 = fetch(DATASET_PATHS.districts).then(r => r.json());
 
-    const [detailed, aggregated, clusters] = await Promise.all([p1, p2, p3]);
+    const [detailed, aggregated, clusters, districts] =
+        await Promise.all([p1, p2, p3, p4]);
 
     DATA_CACHE.detailed = detailed;
     DATA_CACHE.aggregated = aggregated;
     DATA_CACHE.clusters = clusters;
+    DATA_CACHE.districts = districts;
 }
+
 // Получить расстояние в метрах видимой ширины (не используется в логике смены сейчас,
 // но оставил вашу функцию, если потребуется)
 function getVisibleWidthMeters() {
@@ -219,6 +224,37 @@ function updateLegend(field, min, max, q1, q2, q3) {
 // и используем resolvePropertyKey чтобы найти реальное имя свойства
 function updateLayer(field) {
 
+    const data =
+        activeMode === "districts"
+            ? DATA_CACHE.districts
+            : getActiveData();
+
+    if (!data) return;
+
+    const values = data.features
+        .map(f => f.properties[field])
+        .filter(v => v !== null && v !== undefined && !isNaN(v));
+
+    if (!values.length) return;
+
+    const breaks = getQuartiles(values);
+
+    const expression = [
+        "step",
+        ["get", field],
+        "#f1eef6",
+        breaks[0], "#d7b5d8",
+        breaks[1], "#df65b0",
+        breaks[2], "#ce1256"
+    ];
+
+    const targetLayer =
+        activeMode === "districts"
+            ? "districts-layer"
+            : "indexes-layer";
+
+    map.setPaintProperty(targetLayer, "fill-color", expression);
+    
     function getActiveData() {
     if (activeMode === "clusters") {
         return DATA_CACHE.clusters;
@@ -290,13 +326,24 @@ function switchMode(mode) {
 
     activeMode = mode;
 
-    const source = map.getSource("indexes");
+    if (mode === "districts") {
 
-    if (mode === "clusters") {
-        source.setData(DATA_CACHE.clusters);
+        map.setLayoutProperty("indexes-layer", "visibility", "none");
+        map.setLayoutProperty("districts-layer", "visibility", "visible");
+
     } else {
-        ensureDatasetByScale();
-        source.setData(DATA_CACHE[activeDataset]);
+
+        map.setLayoutProperty("districts-layer", "visibility", "none");
+        map.setLayoutProperty("indexes-layer", "visibility", "visible");
+
+        if (mode === "clusters") {
+            map.getSource("indexes")
+               .setData(DATA_CACHE.clusters);
+        } else {
+            ensureDatasetByScale();
+            map.getSource("indexes")
+               .setData(DATA_CACHE[activeDataset]);
+        }
     }
 
     updateLayer(currentField);
@@ -306,6 +353,11 @@ function switchMode(mode) {
 map.on("load", async () => {
 
     await preloadDatasets();
+
+    map.addSource("districts-source", {
+    type: "geojson",
+    data: DATA_CACHE.districts
+    });
 
     map.addSource("indexes", {
         type: "geojson",
@@ -322,6 +374,20 @@ map.on("load", async () => {
             "fill-antialias": false
         }
     });
+
+    map.addLayer({
+    id: "districts-layer",
+    type: "fill",
+    source: "districts-source",
+    layout: {
+        visibility: "none"
+    },
+    paint: {
+        "fill-color": "#ffffff",
+        "fill-opacity": 0.9,
+        "fill-antialias": false
+    }
+});
 
     map.addSource("msk-borders", {
         type: "geojson",
@@ -431,4 +497,5 @@ options.forEach(option => {
         switchMode(selectedMode);
     });
 });
+
 
