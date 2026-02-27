@@ -54,14 +54,17 @@
     <div class="panel"><div class="panel-title">Интенсивность предпринимательской активности</div><div class="panel-content">Скоро будет!</div></div>
 
     <div id="mode-switch">
-      <span class="mode-label left active">Ячейки</span>
+      <div class="mode-container">
+        <div class="mode-indicator"></div>
 
-      <label class="switch">
-        <input type="checkbox" id="modeToggle">
-        <span class="slider"></span>
-      </label>
+        <div class="mode-option active" data-mode="cells">
+            Ячейки
+        </div>
 
-      <span class="mode-label right">Кластеры</span>
+        <div class="mode-option" data-mode="clusters">
+            Кластеры
+        </div>
+      </div>
     </div>
   
     <div id="legend">
@@ -84,4 +87,5 @@
 </body>
 
 </html>
+
 
