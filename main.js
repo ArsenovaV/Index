@@ -410,19 +410,25 @@ map.on("click", "indexes-layer", (e) => {
         .addTo(map);
 });
 
-const toggle = document.getElementById("modeToggle");
-const labels = document.querySelectorAll(".mode-label");
+const container = document.querySelector(".mode-container");
+const options = document.querySelectorAll(".mode-option");
 
-toggle.addEventListener("change", () => {
+options.forEach(option => {
+    option.addEventListener("click", () => {
 
-    if (toggle.checked) {
-        switchMode("clusters");
-        labels[0].classList.remove("active");
-        labels[1].classList.add("active");
-    } else {
-        switchMode("cells");
-        labels[1].classList.remove("active");
-        labels[0].classList.add("active");
-    }
+        const selectedMode = option.dataset.mode;
 
+        // визуальное состояние
+        options.forEach(o => o.classList.remove("active"));
+        option.classList.add("active");
+
+        if (selectedMode === "clusters") {
+            container.classList.add("clusters");
+        } else {
+            container.classList.remove("clusters");
+        }
+
+        switchMode(selectedMode);
+    });
 });
+
