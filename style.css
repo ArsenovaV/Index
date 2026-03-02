@@ -183,7 +183,7 @@ body {
 
 #sidebar {
     position: absolute;
-    top: 90px;              /* ниже логотипов */
+    top: 70px;              /* ниже логотипов */
     left: 0;
     height: 75vh;
     width: 280px;
@@ -206,8 +206,8 @@ body {
 
 #sidebar-toggle {
     position: absolute;
-    top: calc(90px + 37.5vh);  /* центр панели */
-    left: 260px;
+    top: calc(70px + 37.5vh);  /* центр панели */
+    left: 295px;
     width: 44px;
     height: 44px;
     background: #8471A9;
@@ -265,6 +265,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
