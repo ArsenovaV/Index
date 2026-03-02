@@ -194,7 +194,8 @@ function getQuartileExpression(propertyKey, q1, q2, q3) {
 }
 
 // Обновление легенды — ваша логика почти без изменений
-function updateLegend(field, min, max, q1, q2, q3) {
+function updateLegend(field) {
+
     const titles = {
         "Index ZOZh": "Итоговый индекс ЗОЖ",
         "norm_n": "Коммерческий спорт",
@@ -212,13 +213,12 @@ function updateLegend(field, min, max, q1, q2, q3) {
     document.getElementById("c3").style.background = colors[2];
     document.getElementById("c4").style.background = colors[3];
 
-    document.getElementById("l1").innerText = `${min.toFixed(1)} – ${q1.toFixed(1)}`;
-    document.getElementById("l2").innerText = `${q1.toFixed(1)} – ${q2.toFixed(1)}`;
-    document.getElementById("l3").innerText = `${q2.toFixed(1)} – ${q3.toFixed(1)}`;
-    document.getElementById("l4").innerText = `> ${q3.toFixed(1)}`;
+    document.getElementById("l1").innerText = "0 – 25";
+    document.getElementById("l2").innerText = "25 – 50";
+    document.getElementById("l3").innerText = "50 – 75";
+    document.getElementById("l4").innerText = "75 – 100";
 
-    document.getElementById("legend-minmax").innerText =
-        `Min: ${min.toFixed(1)} | Max: ${max.toFixed(1)}`;
+    document.getElementById("legend-minmax").innerText = "";
 }
 
 // Обновление слоя: теперь мы берём данные из DATA_CACHE[activeDataset]
@@ -244,7 +244,14 @@ function updateLayer(field) {
     const max = Math.max(...values);
     const { q1, q2, q3 } = calculateQuartiles(values);
 
-    const expression = getQuartileExpression(propKey, q1, q2, q3);
+    const expression = [
+        "step",
+        ["get", propKey],
+        "#FCFAFF",
+        25, "#D8C7F1",
+        50, "#8471A9",
+        75, "#301E67"
+    ];
 
     const targetLayer =
         activeMode === "districts"
@@ -467,6 +474,7 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
 
 
