@@ -187,7 +187,7 @@ body {
     left: 0;
     height: 75vh;
     width: 280px;
-    background: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.8);
     backdrop-filter: blur(8px);
     padding: 20px;
     box-shadow: 6px 0 25px rgba(0,0,0,0.15);
@@ -224,7 +224,7 @@ body {
 
 /* Когда панель скрыта */
 #sidebar.collapsed + #sidebar-toggle {
-    left: -22px; /* половина кнопки торчит */
+    left: -8px; /* половина кнопки торчит */
 }
 
 /* Поворот стрелки */
@@ -238,7 +238,7 @@ body {
     top: 20px;
     right: 20px;
     width: 220px;
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.8);
     backdrop-filter: blur(6px);
     padding: 14px 16px;
     border-radius: 16px;
@@ -252,7 +252,7 @@ body {
     bottom: 20px;
     left: 20px;
     width: 260px;
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.8);
     backdrop-filter: blur(6px);
     padding: 14px 16px;
     border-radius: 16px;
@@ -265,6 +265,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
