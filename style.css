@@ -229,7 +229,7 @@ body {
 
 /* Когда панель скрыта */
 #sidebar.collapsed + #sidebar-toggle {
-    left: -4px; /* половина кнопки торчит */
+    left: -10px; /* половина кнопки торчит */
 }
 
 /* Поворот стрелки */
@@ -270,6 +270,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
