@@ -14,25 +14,6 @@ body {
     flex: 1;
 }
 
-#legend {
-    margin-top: auto;
-    padding-top: 20px;
-    font-size: 14px;
-    border-top: 1px solid #eee;
-}
-
-.legend-scale div {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-}
-
 .maplibregl-popup-content {
     border-radius: 12px;
     padding: 12px 14px;
@@ -238,21 +219,20 @@ body {
     display: inline-block;
 }
 
-#legend-box {
+#mode-box {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 220px;
-    background: rgba(255,255,255,0.8);
+    width: 260px;
+    background: rgba(255,255,255,0.85);
     backdrop-filter: blur(6px);
-    padding: 14px 16px;
-    border-radius: 16px;
+    padding: 16px;
+    border-radius: 18px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    font-size: 13px;
     z-index: 4;
 }
 
-#mode-box {
+#legend-box {
     position: absolute;
     bottom: 20px;
     left: 20px;
@@ -271,15 +251,51 @@ body {
     margin-bottom: 8px;
 }
 
+#legend-box {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 260px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    padding: 16px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    font-size: 13px;
+    z-index: 4;
+}
 
+#legend-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
+/* Цветовая шкала */
+.legend-bar {
+    display: flex;
+    height: 18px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
 
+.legend-segment {
+    flex: 1;
+}
 
+/* Скругляем только крайние */
+.legend-segment:first-child {
+    border-radius: 9px 0 0 9px;
+}
 
+.legend-segment:last-child {
+    border-radius: 0 9px 9px 0;
+}
 
-
-
-
-
+/* Подписи */
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
 
 
