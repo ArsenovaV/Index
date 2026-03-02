@@ -19,6 +19,10 @@
 
 <body>
 
+<div id="sidebar-toggle">
+  <span id="toggle-arrow">❯</span>
+</div>
+  
 <div id="sidebar">
 
     <div class="panel active" id="panel-zozh">
@@ -53,36 +57,39 @@
     <div class="panel"><div class="panel-title">Благоприятность среды для рождения  и воспитания детей</div><div class="panel-content">Скоро будет!</div></div>
     <div class="panel"><div class="panel-title">Интенсивность предпринимательской активности</div><div class="panel-content">Скоро будет!</div></div>
 
-    <div id="mode-switch">
-      <div class="mode-container">
-        <div class="mode-indicator"></div>
-
-        <div class="mode-option active" data-mode="cells">Ячейки</div>
-        <div class="mode-option" data-mode="clusters">Кластеры</div>
-        <div class="mode-option" data-mode="districts">Районы</div>
-      </div>
-    </div>
-  
-    <div id="legend">
-                <h3 id="legend-title"></h3>
-                <div class="legend-scale">
-                    <div><span class="color-box" id="c4"></span><span id="l4"></span></div>
-                    <div><span class="color-box" id="c3"></span><span id="l3"></span></div>
-                    <div><span class="color-box" id="c2"></span><span id="l2"></span></div>
-                    <div><span class="color-box" id="c1"></span><span id="l1"></span></div>
-                </div>
-                <p id="legend-minmax"></p>
-            </div>
-
 </div>
 
 <div id="map"></div>
+
+<!-- Легенда -->
+<div id="legend-box">
+    <h3 id="legend-title"></h3>
+    <div class="legend-scale">
+        <div><span class="color-box" id="c4"></span><span id="l4"></span></div>
+        <div><span class="color-box" id="c3"></span><span id="l3"></span></div>
+        <div><span class="color-box" id="c2"></span><span id="l2"></span></div>
+        <div><span class="color-box" id="c1"></span><span id="l1"></span></div>
+    </div>
+    <p id="legend-minmax"></p>
+</div>
+
+<!-- Переключатель агрегации -->
+<div id="mode-box">
+    <div class="mode-title">Уровень агрегации</div>
+    <div class="mode-container">
+        <div class="mode-indicator"></div>
+        <div class="mode-option active" data-mode="cells">Ячейки</div>
+        <div class="mode-option" data-mode="clusters">Кластеры</div>
+        <div class="mode-option" data-mode="districts">Районы</div>
+    </div>
+</div>
 
 <script src="main.js"></script>
 
 </body>
 
 </html>
+
 
 
 
