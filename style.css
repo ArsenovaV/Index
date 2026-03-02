@@ -206,7 +206,7 @@ body {
 
 #sidebar-toggle {
     position: absolute;
-    top: calc(70px + 37.5vh);
+    top: calc(70px + 37.5vh - 28px);
     left: 295px;
 
     width: 36px;
@@ -270,6 +270,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
