@@ -355,7 +355,7 @@ map.on("load", async () => {
     },
     paint: {
         "fill-color": "#ffffff",
-        "fill-opacity": 0.9,
+        "fill-opacity": 0.6,
         "fill-antialias": false
     }
     });
@@ -495,6 +495,7 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
 
 
