@@ -234,16 +234,6 @@ function updateLayer(field) {
         return;
     }
 
-    const values = data.features
-        .map(f => Number(f.properties[propKey]))
-        .filter(v => !isNaN(v));
-
-    if (!values.length) return;
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const { q1, q2, q3 } = calculateQuartiles(values);
-
     const expression = [
         "step",
         ["get", propKey],
@@ -260,9 +250,8 @@ function updateLayer(field) {
 
     map.setPaintProperty(targetLayer, "fill-color", expression);
 
-    updateLegend(field, min, max, q1, q2, q3);
+    updateLegend(field);
 
-    // кешируем ключ для popup
     map.__propertyKeyForPopup = map.__propertyKeyForPopup || {};
     map.__propertyKeyForPopup[activeMode + "::" + field] = propKey;
 }
@@ -298,6 +287,11 @@ function getActiveData() {
 }
 
 function switchMode(mode) {
+
+    if (currentPopup) {
+        currentPopup.remove();
+        currentPopup = null;
+    }
 
     if (mode === activeMode) return;
 
@@ -384,8 +378,6 @@ map.on("load", async () => {
     map.setLayoutProperty("indexes-layer", "visibility", "none");
     map.setLayoutProperty("districts-layer", "visibility", "visible");
 
-    container.classList.add("districts");
-
     map.on("moveend", ensureDatasetByScale);
 
     updateLayer(currentField);
@@ -422,6 +414,8 @@ document.querySelectorAll(".indicator").forEach(item => {
 
 
 // ----------------- Popup (используем сохранённый объект соответствия ключей) -----------------
+let currentPopup = null;
+
 function attachPopup(layerId) {
     map.on("click", layerId, (e) => {
 
@@ -436,13 +430,30 @@ function attachPopup(layerId) {
 
         const val = Number(props[propKey]);
 
+        const titles = {
+            "Index ZOZh": "Итоговый индекс ЗОЖ",
+            "norm_n": "Коммерческий спорт",
+            "norm_fitness": "Спортивные площадки",
+            "norm_bad": "Негативные объекты",
+            "norm_park_weighted_avail": "Рекреационная инфраструктура"
+        };
+
         const popupContent = `
             <div class="popup-content">
-                <b>${isNaN(val) ? "-" : val.toFixed(1)}</b>
+                <div style="font-weight:600; margin-bottom:4px;">
+                    ${titles[field] || field}
+                </div>
+                <div style="font-size:16px;">
+                    ${isNaN(val) ? "-" : val.toFixed(1)}
+                </div>
             </div>
         `;
 
-        new maplibregl.Popup()
+        if (currentPopup) {
+            currentPopup.remove();
+        }
+
+        currentPopup = new maplibregl.Popup()
             .setLngLat(e.lngLat)
             .setHTML(popupContent)
             .addTo(map);
@@ -451,6 +462,16 @@ function attachPopup(layerId) {
 
 const container = document.querySelector(".mode-container");
 const options = document.querySelectorAll(".mode-option");
+
+// режим по умолчанию — Районы
+container.classList.add("districts");
+
+options.forEach(o => {
+    o.classList.remove("active");
+    if (o.dataset.mode === "districts") {
+        o.classList.add("active");
+    }
+});
 
 options.forEach((option, index) => {
 
@@ -474,6 +495,7 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
 
 
