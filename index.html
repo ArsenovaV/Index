@@ -72,14 +72,21 @@
 
 <!-- Легенда -->
 <div id="legend-box">
-    <h3 id="legend-title"></h3>
-    <div class="legend-scale">
-        <div><span class="color-box" id="c4"></span><span id="l4"></span></div>
-        <div><span class="color-box" id="c3"></span><span id="l3"></span></div>
-        <div><span class="color-box" id="c2"></span><span id="l2"></span></div>
-        <div><span class="color-box" id="c1"></span><span id="l1"></span></div>
+    <div id="legend-title"></div>
+
+    <div class="legend-bar">
+        <div class="legend-segment" id="seg1"></div>
+        <div class="legend-segment" id="seg2"></div>
+        <div class="legend-segment" id="seg3"></div>
+        <div class="legend-segment" id="seg4"></div>
     </div>
-    <p id="legend-minmax"></p>
+
+    <div class="legend-labels">
+        <span id="l1"></span>
+        <span id="l2"></span>
+        <span id="l3"></span>
+        <span id="l4"></span>
+    </div>
 </div>
 
 <!-- Переключатель агрегации -->
@@ -98,6 +105,7 @@
 </body>
 
 </html>
+
 
 
 
