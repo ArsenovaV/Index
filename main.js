@@ -204,21 +204,20 @@ function updateLegend(field) {
         "norm_park_weighted_avail": "Рекреационная инфраструктура"
     };
 
-    document.getElementById("legend-title").innerText = titles[field] || field;
+    document.getElementById("legend-title").innerText =
+        titles[field] || field;
 
     const colors = ["#FCFAFF", "#D8C7F1", "#8471A9", "#301E67"];
 
-    document.getElementById("c1").style.background = colors[0];
-    document.getElementById("c2").style.background = colors[1];
-    document.getElementById("c3").style.background = colors[2];
-    document.getElementById("c4").style.background = colors[3];
+    document.getElementById("seg1").style.background = colors[0];
+    document.getElementById("seg2").style.background = colors[1];
+    document.getElementById("seg3").style.background = colors[2];
+    document.getElementById("seg4").style.background = colors[3];
 
-    document.getElementById("l1").innerText = "0 – 25";
-    document.getElementById("l2").innerText = "25 – 50";
-    document.getElementById("l3").innerText = "50 – 75";
-    document.getElementById("l4").innerText = "75 – 100";
-
-    document.getElementById("legend-minmax").innerText = "";
+    document.getElementById("l1").innerText = "0";
+    document.getElementById("l2").innerText = "25";
+    document.getElementById("l3").innerText = "50";
+    document.getElementById("l4").innerText = "75+";
 }
 
 // Обновление слоя: теперь мы берём данные из DATA_CACHE[activeDataset]
@@ -512,5 +511,6 @@ const toggle = document.getElementById("sidebar-toggle");
 toggle.addEventListener("click", () => {
     sidebar.classList.toggle("collapsed");
 });
+
 
 
