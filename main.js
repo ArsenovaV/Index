@@ -268,6 +268,12 @@ function ensureDatasetByScale() {
 
     activeDataset = nextDataset;
 
+    // 👉 Закрываем popup при смене датасета
+    if (currentPopup) {
+        currentPopup.remove();
+        currentPopup = null;
+    }
+
     const source = map.getSource("indexes");
     if (source) {
         source.setData(DATA_CACHE[nextDataset]);
@@ -397,6 +403,12 @@ document.querySelectorAll(".panel-title").forEach(title => {
 document.querySelectorAll(".indicator").forEach(item => {
     item.addEventListener("click", () => {
 
+        // Закрываем popup при смене показателя
+        if (currentPopup) {
+            currentPopup.remove();
+            currentPopup = null;
+        }
+
         document.querySelectorAll(".indicator")
             .forEach(i => i.classList.remove("active"));
 
@@ -405,8 +417,6 @@ document.querySelectorAll(".indicator").forEach(item => {
         const field = item.dataset.field;
         currentField = field;
 
-        // Сначала убедимся, что активный датасет соответствует уровню зума,
-        // затем обновим слой (это гарантирует, что для любого поля смена набора произойдёт корректно)
         ensureDatasetByScale();
         updateLayer(field);
     });
@@ -495,6 +505,7 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
 
 
