@@ -166,7 +166,7 @@ body {
     position: absolute;
     top: 70px;              /* ниже логотипов */
     left: 0;
-    height: 75vh;
+    height: 60vh;
     width: 280px;
     background: rgba(255,255,255,0.8);
     backdrop-filter: blur(8px);
@@ -297,5 +297,6 @@ body {
     justify-content: space-between;
     font-size: 12px;
 }
+
 
 
