@@ -27,7 +27,7 @@ const DATA_CACHE = {
 
 let activeDataset = "aggregated";
 let currentField = "Index ZOZh";
-let activeMode = "cells";
+let activeMode = "districts";
 
 // Создаем свою масштабную линейку с подписями кириллицей
 class RussianScaleControl {
@@ -357,7 +357,7 @@ map.on("load", async () => {
         "fill-opacity": 0.9,
         "fill-antialias": false
     }
-});
+    });
 
     map.addSource("msk-borders", {
         type: "geojson",
@@ -373,6 +373,11 @@ map.on("load", async () => {
             "line-width": 1
         }
     });
+
+    map.setLayoutProperty("indexes-layer", "visibility", "none");
+    map.setLayoutProperty("districts-layer", "visibility", "visible");
+
+    container.classList.add("districts");
 
     map.on("moveend", ensureDatasetByScale);
 
@@ -462,5 +467,6 @@ options.forEach((option, index) => {
         switchMode(selectedMode);
     });
 });
+
 
 
