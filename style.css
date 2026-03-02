@@ -10,16 +10,6 @@ body {
     display: flex;
 }
 
-#sidebar {
-    width: 260px;
-    background: white;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.15);
-    z-index: 1;
-}
-
 #map {
     flex: 1;
 }
@@ -175,51 +165,76 @@ body {
     color: white;
 }
 
-#sidebar {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    height: 75vh;
-    width: 280px;
-    background: white;
-    padding: 20px;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-    border-radius: 0 16px 16px 0;
-    transition: transform 0.3s ease;
-    z-index: 5;
-    overflow-y: auto;
-}
-
 #sidebar.collapsed {
     transform: translate(-100%, -50%);
 }
 
+#logo-box {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.logo-circle {
+    width: 36px;
+    height: 36px;
+    background: #8471A9;
+    border-radius: 50%;
+}
+
+#sidebar {
+    position: absolute;
+    top: 90px;              /* ниже логотипов */
+    left: 0;
+    height: 75vh;
+    width: 280px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+    box-shadow: 6px 0 25px rgba(0,0,0,0.15);
+    border-radius: 0 18px 18px 0;
+    transition: transform 0.35s ease;
+    z-index: 5;
+    overflow-y: auto;
+}
+
+/* Изначально скрыта */
+#sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* ===== КНОПКА ===== */
+
 #sidebar-toggle {
     position: absolute;
-    top: 50%;
-    left: 280px;
-    transform: translateY(-50%);
-    width: 42px;
-    height: 42px;
+    top: calc(90px + 37.5vh);  /* центр панели */
+    left: 260px;
+    width: 44px;
+    height: 44px;
     background: #8471A9;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
-    transition: left 0.3s ease, transform 0.3s ease;
+    transition: left 0.35s ease, transform 0.35s ease;
     z-index: 6;
 }
 
+/* Когда панель скрыта */
 #sidebar.collapsed + #sidebar-toggle {
-    left: 0;
+    left: -22px; /* половина кнопки торчит */
 }
 
+/* Поворот стрелки */
 #sidebar.collapsed + #sidebar-toggle span {
     transform: rotate(180deg);
+    display: inline-block;
 }
 
 #legend-box {
@@ -254,6 +269,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
