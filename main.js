@@ -3,7 +3,7 @@ const map = new maplibregl.Map({
     container: "map",
     style: "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
     center: [37.6173, 55.7558],
-    zoom: 9,
+    zoom: 10,
 });
 
 // Настраиваем порог зума
@@ -512,3 +512,4 @@ const toggle = document.getElementById("sidebar-toggle");
 toggle.addEventListener("click", () => {
     sidebar.classList.toggle("collapsed");
 });
+
