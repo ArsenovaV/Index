@@ -165,10 +165,6 @@ body {
     color: white;
 }
 
-#sidebar.collapsed {
-    transform: translate(-100%, -50%);
-}
-
 #logo-box {
     position: absolute;
     top: 20px;
@@ -269,6 +265,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
