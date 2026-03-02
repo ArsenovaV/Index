@@ -207,7 +207,7 @@ body {
 #sidebar-toggle {
     position: absolute;
     top: calc(70px + 37.5vh - 28px);
-    left: 295px;
+    left: 305px;
 
     width: 36px;
     height: 56px;
@@ -224,7 +224,7 @@ body {
 
     cursor: pointer;
     transition: left 0.35s ease;
-    z-index: 6;
+    z-index: 4;
 }
 
 /* Когда панель скрыта */
@@ -270,6 +270,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
 }
+
 
 
 
