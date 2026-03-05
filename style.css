@@ -68,7 +68,7 @@ body {
 }
 
 .panel.active .panel-content {
-    max-height: 300px;
+    max-height: 500px;
 }
 
 .indicator {
@@ -307,7 +307,7 @@ body {
 
     #sidebar {
         top: 60px;
-        max-height: calc(100vh - 80px);
+        height: calc(100vh - 80px);
     }
 
     #logo-box {
@@ -323,6 +323,11 @@ body {
 .maplibregl-ctrl-bottom-right .russian-scale-control {
     margin-bottom: 100px;
 }
+
+#sidebar {
+    scrollbar-width: thin;
+}
+
 
 
 
