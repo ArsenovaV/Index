@@ -247,7 +247,7 @@ body {
 #legend-box {
     position: absolute;
 
-    bottom: 70px;   /* выше scale control */
+    bottom: 95px;   /* выше scale control */
     right: 20px;
 
     width: 260px;
@@ -314,5 +314,8 @@ body {
 
 }
 
+.maplibregl-ctrl-bottom-right {
+    bottom: 10px;
+}
 
 
