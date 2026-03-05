@@ -505,11 +505,17 @@ options.forEach((option, index) => {
     });
 });
 
-const sidebar = document.getElementById("sidebar");
-const toggle = document.getElementById("sidebar-toggle");
+document.addEventListener("DOMContentLoaded", () => {
 
-toggle.addEventListener("click", () => {
-    sidebar.classList.toggle("collapsed");
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("sidebar-toggle");
+
+    if (toggle && sidebar) {
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+        });
+    }
+
 });
 
 document.querySelectorAll(".panel-title").forEach(title => {
@@ -531,3 +537,4 @@ document.querySelectorAll(".panel-title").forEach(title => {
     });
 
 });
+
