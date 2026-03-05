@@ -232,7 +232,7 @@ body {
 
 #mode-box {
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     left: 20px;
 
     width: 260px;
@@ -250,7 +250,7 @@ body {
 #legend-box {
     position: absolute;
 
-    bottom: 20px; 
+    bottom: 30px; 
     right: 20px;
 
     width: 260px;
@@ -318,12 +318,13 @@ body {
 }
 
 .maplibregl-ctrl-bottom-right {
-    margin-bottom: 10px;
+    margin-bottom: -10px;
 }
 
 .maplibregl-ctrl-bottom-right .russian-scale-control {
-    margin-bottom: 90px;
+    margin-bottom: 100px;
 }
+
 
 
 
