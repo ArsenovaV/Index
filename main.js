@@ -512,5 +512,19 @@ toggle.addEventListener("click", () => {
     sidebar.classList.toggle("collapsed");
 });
 
+document.querySelectorAll(".panel-title").forEach(title => {
+
+    title.addEventListener("click", () => {
+
+        const panel = title.parentElement;
+
+        document.querySelectorAll(".panel").forEach(p => {
+            if (p !== panel) p.classList.remove("active");
+        });
+
+        panel.classList.toggle("active");
+    });
+
+});
 
 
