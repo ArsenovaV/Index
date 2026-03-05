@@ -168,10 +168,13 @@ body {
     left: 0;
 
     width: 280px;
-    max-height: calc(100vh - 100px);   /* вместо 70vh */
+
+    /* вместо фиксированной высоты */
+    max-height: calc(100vh - 210px);
 
     background: rgba(255,255,255,0.8);
     backdrop-filter: blur(8px);
+
     padding: 20px;
 
     box-shadow: 6px 0 25px rgba(0,0,0,0.15);
@@ -247,7 +250,7 @@ body {
 #legend-box {
     position: absolute;
 
-    bottom: 95px;   /* выше scale control */
+    bottom: 20px;   /* выше scale control */
     right: 20px;
 
     width: 260px;
@@ -317,6 +320,7 @@ body {
 .maplibregl-ctrl-bottom-right {
     bottom: -15px;
 }
+
 
 
 
