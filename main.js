@@ -390,15 +390,6 @@ map.on("load", async () => {
     attachPopup("districts-layer");
 });
 
-
-// ----------------- UI / переключение показателей -----------------
-document.querySelectorAll(".panel-title").forEach(title => {
-    title.addEventListener("click", () => {
-        const panel = title.parentElement;
-        panel.classList.toggle("active");
-    });
-});
-
 document.querySelectorAll(".indicator").forEach(item => {
     item.addEventListener("click", () => {
 
@@ -537,4 +528,5 @@ document.querySelectorAll(".panel-title").forEach(title => {
     });
 
 });
+
 
