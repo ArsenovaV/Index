@@ -299,7 +299,7 @@ body {
     font-size: 12px;
 }
 
-@media (max-height: 800px) {
+@media (max-height: 100px) {
 
     #sidebar {
         top: 60px;
@@ -323,6 +323,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
