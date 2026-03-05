@@ -5,17 +5,12 @@ html, body {
     font-family: 'Open Sans', sans-serif;
 }
 
-body {
-    position: relative; /* вместо display:flex */
-    height: 100%;
+body { 
+    display: flex; 
 }
 
-#map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+#map { 
+    flex: 1; 
 }
 
 .maplibregl-popup-content {
@@ -328,6 +323,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
