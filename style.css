@@ -65,13 +65,9 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease;
-    margin-top: 8px;
-    display: none;
-    font-size: 14px;
 }
 
 .panel.active .panel-content {
-    display: block;
     max-height: 300px;
 }
 
@@ -327,6 +323,7 @@ body {
 .maplibregl-ctrl-bottom-right .russian-scale-control {
     margin-bottom: 100px;
 }
+
 
 
 
