@@ -68,7 +68,7 @@ body {
 }
 
 .panel.active .panel-content {
-    max-height: 500px;
+    max-height: 300px;
 }
 
 .indicator {
@@ -327,6 +327,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
