@@ -163,7 +163,8 @@ body {
 
 #sidebar {
     position: absolute;
-    top: 70px;
+    top: 70px;           /* под logo-box */
+    bottom: 80px;        /* выше mode-box (30px bottom + его высота ~50px) */
     left: 0;
     width: 280px;
 
@@ -174,7 +175,6 @@ body {
     box-shadow: 6px 0 25px rgba(0,0,0,0.15);
     border-radius: 0 18px 18px 0;
 
-    max-height: calc(100vh - 100px); /* подстраивается по окну */
     overflow-y: auto;
 
     transition: transform 0.35s ease;
@@ -323,6 +323,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
