@@ -1,8 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
+    height: 100%;
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -164,16 +163,12 @@ body {
 
 #sidebar {
     position: absolute;
-    top: 70px;
-    bottom: 120px;
+    top: 70px;          /* отступ сверху */
     left: 0;
-
     width: 280px;
 
-    /* вместо фиксированной высоты */
     background: rgba(255,255,255,0.8);
     backdrop-filter: blur(8px);
-
     padding: 20px;
 
     box-shadow: 6px 0 25px rgba(0,0,0,0.15);
@@ -182,7 +177,8 @@ body {
     transition: transform 0.35s ease;
     z-index: 5;
 
-    overflow-y: auto;
+    max-height: calc(100vh - 100px); /* максимум по высоте окна */
+    overflow-y: auto;                /* прокрутка при переполнении */
 }
 
 /* Изначально скрыта */
@@ -327,6 +323,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
