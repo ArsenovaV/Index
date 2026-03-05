@@ -250,7 +250,7 @@ body {
 #legend-box {
     position: absolute;
 
-    bottom: 20px;   /* выше scale control */
+    bottom: 20px; 
     right: 20px;
 
     width: 260px;
@@ -318,7 +318,11 @@ body {
 }
 
 .maplibregl-ctrl-bottom-right {
-    bottom: -15px;
+    margin-bottom: 10px;
+}
+
+.maplibregl-ctrl-bottom-right .russian-scale-control {
+    margin-bottom: 90px;
 }
 
 
