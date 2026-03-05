@@ -163,7 +163,7 @@ body {
 
 #sidebar {
     position: absolute;
-    top: 70px;          /* отступ сверху */
+    top: 70px;
     left: 0;
     width: 280px;
 
@@ -174,11 +174,11 @@ body {
     box-shadow: 6px 0 25px rgba(0,0,0,0.15);
     border-radius: 0 18px 18px 0;
 
+    max-height: calc(100vh - 100px); /* подстраивается по окну */
+    overflow-y: auto;
+
     transition: transform 0.35s ease;
     z-index: 5;
-
-    max-height: calc(100vh - 100px); /* максимум по высоте окна */
-    overflow-y: auto;                /* прокрутка при переполнении */
 }
 
 /* Изначально скрыта */
@@ -323,6 +323,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
