@@ -194,7 +194,7 @@ body {
     top: 50vh;               /* центр экрана */
     transform: translateY(-50%);
 
-    left: 315px;
+    left: 310px;
 
     width: 36px;
     height: 56px;
@@ -320,6 +320,7 @@ body {
 #sidebar {
     scrollbar-width: thin;
 }
+
 
 
 
