@@ -518,13 +518,16 @@ document.querySelectorAll(".panel-title").forEach(title => {
 
         const panel = title.parentElement;
 
+        // закрываем остальные панели
         document.querySelectorAll(".panel").forEach(p => {
-            if (p !== panel) p.classList.remove("active");
+            if (p !== panel) {
+                p.classList.remove("active");
+            }
         });
 
+        // переключаем текущую
         panel.classList.toggle("active");
+
     });
 
 });
-
-
